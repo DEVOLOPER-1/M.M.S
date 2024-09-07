@@ -69,8 +69,22 @@ def upload_movies_to_firestore(uploaded_records_file_path):
     # the doc_ref.add(x) adds the record dictionary and in each iteration makes a new document with a new random reference
 
 
-# def get_movies_from_firestore():
+def get_movies_from_firestore():
+    db = firestore.client()
+    movies_table_ref = db.collection("movies_table").list_documents(30)
+    loaded_movies = set()
+    movies_metadata_lista = []
+    for document in movies_table_ref.stream():
+        
+        output = document.to_dict()
+        movies_metadata_lista.append(output)
+        if output["imdb_id"] in loaded_movies:
+            continue
+        else:
+            loaded_movies.add(output["imdb_id"])
+    return movies_metadata_lista
 
+        
 
 # def add_to_cart(user_id, movie_id):
 
