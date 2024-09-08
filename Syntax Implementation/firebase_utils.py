@@ -71,7 +71,7 @@ def upload_movies_to_firestore(uploaded_records_file_path):
 
 def get_movies_from_firestore():
     db = firestore.client()
-    movies_table_ref = db.collection("movies_table").list_documents(30)
+    movies_table_ref = db.collection("movies_table").list_documents(page_size=30)
     loaded_movies = set()
     movies_metadata_lista = []
     for document in movies_table_ref.stream():

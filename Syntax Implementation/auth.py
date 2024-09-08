@@ -6,8 +6,11 @@ from firebase_admin import auth
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
+
 load_dotenv(r"V:\INTERNSHIP\Hackathon Project\M.M.S\Syntax Implementation\secrets.env")
 api_key = os.getenv("web_api_key")
+
 def verify_signed_up_email(link , registerer_email):
 
     # creates SMTP session
@@ -33,14 +36,22 @@ def verify_signed_up_email(link , registerer_email):
     s.quit()
     
     
-def sign_up_user(email, password, user_name):
-    user = auth.create_user(
-        email=email,
-        password=password
-    )
-    auth.update_user(user.uid, display_name=user_name)
-    # link = auth.generate_email_verification_link(email=email)
-    # verify_signed_up_email(link=link ,registerer_email=email)
+def sign_up_user(email, password):
+    url = f'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={api_key}'
+    headers = {
+        'Content-Type': 'application/json', #specifiying the content type of headers to json
+    }
+    payload = {
+        'email': email,
+        'password': password,
+        'returnSecureToken': True
+    }
+    
+    response = requests.post(url, headers=headers, data=json.dumps(payload))
+    data = response.json()
+    if response.status_code == 200:
+        return True
+
 
 def sign_in(user_mail , user_pass):
 
@@ -55,30 +66,25 @@ def sign_in(user_mail , user_pass):
     }
     
     response = requests.post(url, headers=headers, data=json.dumps(payload))
-
+    data = response.json()
+    print(data)
     if response.status_code == 200:
-        print("signed in successfully")
-        data = response.json()
-        print(data["registered"])
-        idtoken = data["idToken"]
-    else:
-        data = response.json()
-        print(data)
-    return idtoken
+        return data["idToken"]
+    
 
 
-def get_user_info(mail , passs):
+def get_user_info(token):
     url = f"https://identitytoolkit.googleapis.com/v1/accounts:lookup?key={api_key}"
     headers = {
         'Content-Type': 'application/json', #specifiying the content type of headers to json
     }
     payload = {
-            "idToken" : sign_in(mail , passs)
+            "idToken" : token
     }
     response = requests.post(url, headers=headers, data=json.dumps(payload))
     data = response.json()
     print(data)
-    return data["localId"]
+    # return data["displayName"]
 
     
 def send_password_reset_mail(user_mail):
@@ -91,7 +97,10 @@ def send_password_reset_mail(user_mail):
             "email" : user_mail
     }
     response = requests.post(endpoint_url, headers=headers, data=json.dumps(payload))
-    data = response.json()
-    print(data)
+    if response.status_code == 200:
+        return True
+    else:
+        return False
+
 # def sign_out_user(user_mail , passs):
 #     auth.revoke_refresh_tokens(uid=get_user_info(user_mail , passs))
