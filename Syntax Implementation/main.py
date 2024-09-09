@@ -1,6 +1,6 @@
 import streamlit as st
 import ui_components as ui
-
+import firebase_utils as fu
 
 # Main app logic
 
@@ -16,6 +16,7 @@ def main():
         st.session_state.loaded_movies = set()
 
     if st.session_state.authenticated:
+        # fu.initialize_firebase()
         ui.main_page()
     else:
         st.sidebar.title("Navigation")

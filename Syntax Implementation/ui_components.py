@@ -1,43 +1,59 @@
 import streamlit as st
-from streamlit_card import card
+# from streamlit_card import card
 import auth as au_th
 import firebase_utils as fu
+import requests
+from PIL import Image
+from io import BytesIO
 
-
-# def movie_card():
-#     movie_data = fu.get_movies_from_firestore()
-#     for single_movie in movie_data:
-        
-#         hasClicked = card(
-#         title=single_movie["original_title"],
-#         text=single_movie["tagline"],
-#         image=single_movie["image_url"],
-#         url=single_movie["idmb_url"]
-# )
     
+
+
 
 
 def movie_card():
     movie_data = fu.get_movies_from_firestore()
-    for single_movie in movie_data:
-        hasClicked = card(
-            title=single_movie["original_title"],
-            text=single_movie["tagline"],
-            image=single_movie["image_url"],
-            url=single_movie["idmb_url"]
-        )
+
+    # Create columns
+    cols = st.columns(1, gap="small", vertical_alignment='center')
+
+    for i, single_movie in enumerate(movie_data):
+        # Fetch movie image
+        response = requests.get(single_movie["image_url"]) 
+        if response.status_code not in [200, 201]:
+            image_path = r"V:\INTERNSHIP\Hackathon Project\Resources\no_image.jpg"
+            image = Image.open(image_path)
+        else:    
+            image = Image.open(BytesIO(response.content))
         
-        # Add an expander for additional movie details
-        # with st.expander("See more details"):
-        #     st.write(f"Release Date: {single_movie.get('release_date', 'N/A')}")
-        #     st.write(f"Runtime: {single_movie.get('runtime', 'N/A')} minutes")
-        #     st.write(f"Overview: {single_movie.get('overview', 'N/A')}")
-            # Add more details as needed
-        
-        # You can use the hasClicked variable to perform actions when the card is clicked
-        if hasClicked:
-            st.write(f"You clicked on {single_movie['original_title']}")    
-    
+        # Assign movie to a column
+        col_index = i % 1   # Determine which column to use
+        with cols[col_index]:
+            with st.container(border=True):
+                st.title(single_movie["original_title"])
+                st.subheader(f"Tagline: {single_movie["tagline"]}")
+                st.image(image)
+                st.button(label="Add To Cart" ,key=single_movie["imdb_id"] , use_container_width=True)
+                with st.expander("More Details :point_down:"):
+                    
+                    st.markdown(f"""IDMB_id: {single_movie["imdb_id"]}\n
+                        For Adults: {single_movie["adult"]}\n
+                        Genres: {single_movie["genres"]}\n
+                        HomePage: {single_movie["homepage"]}\n
+                        Popularity: {single_movie["popularity"]}\n
+                        Production Companies: {single_movie["production_companies"]}\n
+                        Production Countries: {single_movie["production_countries"]}
+                        Release Date: {single_movie["release_date"]}\n
+                        Spoken Languages: {single_movie["spoken_languages"]}\n
+                        Status: {single_movie["status"]}\n
+                        Vote Average: {single_movie["vote_average"]}\n
+                        IDMB URL: {single_movie["idmb_url"]}\n
+                        IMAGE URL: {single_movie["image_url"]}\n
+                        Overview: {single_movie["overview"]}\n
+                        """)
+                    
+
+
 # def cart_summary(cart_items): 
     
     
@@ -51,7 +67,7 @@ def movie_card():
     
 def main_page():
     st.title('Main Page')
-    st.write(f'Welcome, {st.session_state.username}!')
+
     movie_card()
     # st.button('Logout', on_click=logout)
     
