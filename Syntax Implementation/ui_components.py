@@ -26,54 +26,78 @@ def main_page():
     
     
     
-def login_page():
-    st.write("Welcome to the login page")
-    username = st.text_input('Email')
-    password = st.text_input('Password', type='password')
-    if st.button('Login'):
-        user_token = au_th.sign_in(user_mail=str(username) , user_pass=str(password))
-        if user_token:
-            st.session_state.authenticated = True
-            return_of_user_info = au_th.get_user_info(user_token)
-            st.session_state.username = return_of_user_info
-
-            st.success('Login successful! Redirecting to the main page...')
-            st.rerun(scope="app")  # Rerun the app to show the main page As the user will be authenyicated
-    else:
-        st.error('Invalid credentials. Please try again.' , icon="🚨")
 
 
-def sign_up_page():
-    st.title("Sign Up Page")
-    email = st.text_input('Email')
-    password = st.text_input('Choose a Password', type='password')
-    if st.button("Sign Up"):
-            if au_th.sign_up_user(email , password):
-                st.success('Sign-up successful! You can now log in. , Redirecting to login Page...')
-                st.session_state.page = 'login'
-                # st.experimental_rerun()
-                st.rerun(scope="app")
-            else:
-                st.error('Something Wen Wrong , Please Try to use another Email' , icon="🚨")
+
                 
+def login_page():
+    st.title('Login Page')
+    
+    email = st.text_input('Email')
+    password = st.text_input('Password', type='password')
+    
+    if st.button('Login'):
+        if email and password:
+            # Add debug print
+            print(f"Attempting to log in user: {email}")
+            
+            success = au_th.sign_in(email, password)
+            return_of_user_info = au_th.get_user_info(success)
+            if success:
+                st.session_state.username = return_of_user_info
+                st.success('Logged in successfully!')
+                st.session_state.authenticated = True
+                st.rerun()
+            else:
+                st.error('Invalid email or password. Please try again.')
+        else:
+            st.error('Please enter both email and password.')
+
 
         
         
+def sign_up_page():
+    st.title('Sign Up Page')
+    
+    email = st.text_input('Email')
+    password = st.text_input('Password', type='password')
+    
+    if st.button('Sign Up'):
+        if email and password:
+            
+            success = au_th.sign_up_user(email=str(email), password=str(password))
+            
+            if success:
+                st.success('Account created successfully!')
+                st.session_state.page = 'login'
+                st.rerun()
+            else:
+                st.error('Failed to create account. Please try again.')
+        else:
+            st.error('Please fill in all fields.')
+
+
+
+
+
+
 def reset_password_page():
     st.title('Reset Password Page')
-
+    
     mail = st.text_input('Email')
-    response = False
+    
     if st.button('Reset Password'):
         if mail:
-            response = au_th.send_password_reset_mail(mail)
+            print(f"Attempting to reset password for email: {mail}")
+            
+            response = au_th.send_password_reset_mail(user_mail=str(mail))
+            
             if response:
-                st.success('Password reset link Was Sent To Your Email !')
+                st.success('Password reset link was sent to your email!')
                 st.session_state.page = 'login'
-                # st.experimental_rerun()
-                st.rerun(scope="app")
+                st.rerun()
             else:
-                st.error("failed to send reset password link")    
+                st.error('Failed to send password reset link. Please try again.')
         else:
-            st.error("please enter a valid email address")
+            st.error('Please enter a valid email address.')
 
