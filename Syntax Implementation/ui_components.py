@@ -33,7 +33,7 @@ def movie_card():
                 st.title(single_movie["original_title"])
                 st.subheader(f"Tagline: {single_movie["tagline"]}")
                 st.image(image)
-                st.button(label="Add To Cart" ,key=single_movie["imdb_id"] , use_container_width=True)
+                st.button(label="Add To Cart" ,key=f"add_to_cart_{i}" , use_container_width=True)
                 with st.expander("More Details :point_down:"):
                     
                     st.markdown(f"""IDMB_id: {single_movie["imdb_id"]}\n
@@ -60,7 +60,6 @@ def movie_card():
     
     
     
-# def search_bar():
     
     
     
@@ -68,9 +67,9 @@ def movie_card():
 def main_page():
     st.title('Main Page')
 
-    movie_card()
+    # movie_card()
     # st.button('Logout', on_click=logout)
-    
+    # st.button("Diplay More Movies" ,key="Display More Movies", on_click=movie_card)
     
     
 
@@ -89,9 +88,9 @@ def login_page():
             print(f"Attempting to log in user: {email}")
             
             success = au_th.sign_in(email, password)
-            return_of_user_info = au_th.get_user_info(success)
+            return_of_user_info = success["idToken"]
             if success:
-                st.session_state.username = return_of_user_info
+                st.session_state.idToken = return_of_user_info
                 st.success('Logged in successfully!')
                 st.session_state.authenticated = True
                 st.rerun()
@@ -99,6 +98,7 @@ def login_page():
                 st.error('Invalid email or password. Please try again.')
         else:
             st.error('Please enter both email and password.')
+
 
 
         

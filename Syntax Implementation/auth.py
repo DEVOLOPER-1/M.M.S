@@ -2,7 +2,7 @@ import json
 import requests
 import os
 from dotenv import load_dotenv
-from firebase_admin import auth
+import streamlit as st
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -79,7 +79,7 @@ def get_user_info(token):
         'Content-Type': 'application/json', #specifiying the content type of headers to json
     }
     payload = {
-            "idToken" : token
+            "idToken" : st.session_state.idToken
     }
     response = requests.post(url, headers=headers, data=json.dumps(payload))
     data = response.json()
@@ -101,6 +101,25 @@ def send_password_reset_mail(user_mail):
         return True
     else:
         return False
+
+def update_user_info(new_user_name , user_photo_url):
+    idToken = st.session_state.idToken
+    endpoint_url = f"https://identitytoolkit.googleapis.com/v1/accounts:update?key={api_key}"
+    headers = {
+        'Content-Type': 'application/json', #specifiying the content type of headers to json
+    }
+    payload = {
+    "idToken": str(idToken),
+    "displayName": str(new_user_name),
+    "photoUrl": str(user_photo_url),
+    "returnSecureToken": True
+}
+    response = requests.post(endpoint_url, headers=headers, data=json.dumps(payload))
+    if response.status_code == 200:
+        return True
+    else:
+        return False
+
 
 # def sign_out_user(user_mail , passs):
 #     auth.revoke_refresh_tokens(uid=get_user_info(user_mail , passs))

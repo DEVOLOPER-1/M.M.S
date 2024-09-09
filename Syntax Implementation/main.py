@@ -14,6 +14,9 @@ def main():
         
     if "loaded_movies" not in st.session_state:
         st.session_state.loaded_movies = set()
+    
+    if "idToken" not in st.session_state:
+        st.session_state.idToken = None
 
     if st.session_state.authenticated:
         # fu.initialize_firebase()

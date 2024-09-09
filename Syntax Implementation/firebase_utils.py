@@ -73,7 +73,7 @@ def upload_movies_to_firestore(uploaded_records_file_path):
 def get_movies_from_firestore():
     # initialize_firebase()
     db = firestore.client()
-    movies_table_ref = db.collection("movies_table").limit(30)
+    movies_table_ref = db.collection("movies_table").limit(50)
     movies_metadata_lista = []
 
     for document in movies_table_ref.stream():
@@ -86,8 +86,63 @@ def get_movies_from_firestore():
             continue
     return movies_metadata_lista
 
-        
 
+def add_movie_by_user(movie_id , movie_name  , adult , status):
+    db = firestore.client()
+    collection_ref = db.collection('movies_table')    
+    doc_ref = collection_ref.document(str(movie_id))
+    
+    doc_data = {"imdb_id": str(movie_id),
+                "adult": bool(adult),
+                "collection": "N/A",
+                "genres": "N/A",
+                "homepage": "N/A",
+                "original_title": str(movie_name),
+                "overview": "N/A",
+                "popularity": "N/A",
+                "poster_path": "N/A",
+                "production_companies": "N/A",
+                "production_countries": "N/A",
+                "release_date": "N/A",  # .timestamp()
+                "spoken_languages": "N/A",
+                "status": str(status),
+                "tagline": "N/A",
+                "vote_average": "N/A",
+                "idmb_url": "N/A",
+                "image_url": "N/A"}
+    doc_ref.set(doc_data)
+    
+    
+def update_movie_data(old_movie_id , movie_name, adult , status):
+    db = firestore.client()
+    collection_ref = db.collection('movies_table')    
+    doc_ref = collection_ref.document(str(old_movie_id))
+    
+    doc_data = {"imdb_id": str(old_movie_id),
+                "adult": bool(adult),
+                "collection": "N/A",
+                "genres": "N/A",
+                "homepage": "N/A",
+                "original_title": str(movie_name),
+                "overview": "N/A",
+                "popularity": "N/A",
+                "poster_path": "N/A",
+                "production_companies": "N/A",
+                "production_countries": "N/A",
+                "release_date": "N/A",  # .timestamp()
+                "spoken_languages": "N/A",
+                "status": str(status),
+                "tagline": "N/A",
+                "vote_average": "N/A",
+                "idmb_url": "N/A",
+                "image_url": "N/A"}
+    doc_ref.update(doc_data)
+    
+    
+def delete_movie(movie_id):
+    db = firestore.client()
+    collection_ref = db.collection('movies_table')
+    collection_ref.document(str(movie_id)).delete()    
 # def add_to_cart(user_id, movie_id):
 
 
