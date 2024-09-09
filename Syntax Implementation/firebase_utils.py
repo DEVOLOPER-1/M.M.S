@@ -3,10 +3,12 @@ from firebase_admin import credentials, firestore
 import pandas as pd
 from tqdm import tqdm
 import datetime
+import streamlit as st
 
 
 # credentials_path = "credentials.json"
-def initialize_firebase(credentials_path):
+def initialize_firebase():
+    credentials_path = r"V:\INTERNSHIP\Hackathon Project\M.M.S\Syntax Implementation\credentials.json"
     cred = credentials.Certificate(credentials_path)
     firebase_admin.initialize_app(credential=cred)
 
@@ -68,20 +70,20 @@ def upload_movies_to_firestore(uploaded_records_file_path):
     # the map function is implemented in c , so it's faster than for loop significantly
     # the doc_ref.add(x) adds the record dictionary and in each iteration makes a new document with a new random reference
 
-
 def get_movies_from_firestore():
+    # initialize_firebase()
     db = firestore.client()
-    movies_table_ref = db.collection("movies_table").list_documents(page_size=30)
-    loaded_movies = set()
+    movies_table_ref = db.collection("movies_table").limit(30)
     movies_metadata_lista = []
+
     for document in movies_table_ref.stream():
         
         output = document.to_dict()
-        movies_metadata_lista.append(output)
-        if output["imdb_id"] in loaded_movies:
-            continue
+        if output["imdb_id"] not in st.session_state.loaded_movies:
+            st.session_state.loaded_movies.add(output["imdb_id"])
+            movies_metadata_lista.append(output)
         else:
-            loaded_movies.add(output["imdb_id"])
+            continue
     return movies_metadata_lista
 
         

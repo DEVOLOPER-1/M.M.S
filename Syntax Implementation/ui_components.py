@@ -1,12 +1,42 @@
 import streamlit as st
-from streamlit_card import _streamlit_card
+from streamlit_card import card
 import auth as au_th
+import firebase_utils as fu
 
-# def movie_card(movie_data):
+
+# def movie_card():
+#     movie_data = fu.get_movies_from_firestore()
+#     for single_movie in movie_data:
+        
+#         hasClicked = card(
+#         title=single_movie["original_title"],
+#         text=single_movie["tagline"],
+#         image=single_movie["image_url"],
+#         url=single_movie["idmb_url"]
+# )
     
-    
-    
-    
+
+
+def movie_card():
+    movie_data = fu.get_movies_from_firestore()
+    for single_movie in movie_data:
+        hasClicked = card(
+            title=single_movie["original_title"],
+            text=single_movie["tagline"],
+            image=single_movie["image_url"],
+            url=single_movie["idmb_url"]
+        )
+        
+        # Add an expander for additional movie details
+        # with st.expander("See more details"):
+        #     st.write(f"Release Date: {single_movie.get('release_date', 'N/A')}")
+        #     st.write(f"Runtime: {single_movie.get('runtime', 'N/A')} minutes")
+        #     st.write(f"Overview: {single_movie.get('overview', 'N/A')}")
+            # Add more details as needed
+        
+        # You can use the hasClicked variable to perform actions when the card is clicked
+        if hasClicked:
+            st.write(f"You clicked on {single_movie['original_title']}")    
     
 # def cart_summary(cart_items): 
     
@@ -22,6 +52,7 @@ import auth as au_th
 def main_page():
     st.title('Main Page')
     st.write(f'Welcome, {st.session_state.username}!')
+    movie_card()
     # st.button('Logout', on_click=logout)
     
     

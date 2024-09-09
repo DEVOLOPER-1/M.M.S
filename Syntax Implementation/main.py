@@ -6,10 +6,14 @@ import ui_components as ui
 
 
 def main():
+    
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
     if "page" not in st.session_state:
         st.session_state.page = "login"
+        
+    if "loaded_movies" not in st.session_state:
+        st.session_state.loaded_movies = set()
 
     if st.session_state.authenticated:
         ui.main_page()
