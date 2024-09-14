@@ -143,6 +143,8 @@ def delete_movie(movie_id):
     db = firestore.client()
     collection_ref = db.collection('movies_table')
     collection_ref.document(str(movie_id)).delete()    
+    
+    
 # def add_to_cart(user_id, movie_id):
 
 

@@ -66,10 +66,13 @@ def movie_card():
     
 def main_page():
     st.title('Main Page')
-
-    # movie_card()
-    # st.button('Logout', on_click=logout)
-    # st.button("Diplay More Movies" ,key="Display More Movies", on_click=movie_card)
+    st.sidebar.title("Navigation")
+    choice = st.sidebar.radio("Go to", ["Movies Library", "Cart"])
+    if choice == "Movies Library":
+        movie_card()
+        # st.button('Logout', on_click=logout)
+        st.button("Diplay More Movies" ,key="Display More Movies", on_click=movie_card)
+    # if choice == "Cart":
     
     
 
@@ -88,9 +91,8 @@ def login_page():
             print(f"Attempting to log in user: {email}")
             
             success = au_th.sign_in(email, password)
-            return_of_user_info = success["idToken"]
             if success:
-                st.session_state.idToken = return_of_user_info
+                st.session_state.idToken = success
                 st.success('Logged in successfully!')
                 st.session_state.authenticated = True
                 st.rerun()
