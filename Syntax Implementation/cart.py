@@ -1,7 +1,6 @@
 
 
-
-def add_to_cart(user_id, movie):
+def add_to_cart(movie):
     
     
 def remove_from_cart(user_id, movie_id):
@@ -17,7 +16,6 @@ def process_checkout(user_id):
     
     
     
-def add_to_cart(user_id, movie):
     
     
     

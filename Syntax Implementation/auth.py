@@ -69,7 +69,7 @@ def sign_in(user_mail , user_pass):
     data = response.json()
     print(data)
     if response.status_code == 200:
-        return data["idToken"]
+        return [data["idToken"],data['localId']]
     
 
 

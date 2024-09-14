@@ -17,6 +17,9 @@ def main():
     
     if "idToken" not in st.session_state:
         st.session_state.idToken = None
+        
+    if "user_id"not in st.session_state:
+        st.session_state.user_id = None
 
     if st.session_state.authenticated:
         # fu.initialize_firebase()

@@ -4,7 +4,7 @@ import pandas as pd
 from tqdm import tqdm
 import datetime
 import streamlit as st
-
+import random 
 
 # credentials_path = "credentials.json"
 def initialize_firebase():
@@ -71,7 +71,6 @@ def upload_movies_to_firestore(uploaded_records_file_path):
     # the doc_ref.add(x) adds the record dictionary and in each iteration makes a new document with a new random reference
 
 def get_movies_from_firestore():
-    # initialize_firebase()
     db = firestore.client()
     movies_table_ref = db.collection("movies_table").limit(50)
     movies_metadata_lista = []
@@ -144,11 +143,40 @@ def delete_movie(movie_id):
     collection_ref = db.collection('movies_table')
     collection_ref.document(str(movie_id)).delete()    
     
+
+
+def add_to_cart(movie_id):
+    db = firestore.client()
+
+    user_id = st.session_state.user_id
+    source_doc_ref = db.collection("movies_table").document(str(movie_id))
+    new_doc_ref = db.collection("cart").document(str(user_id+f"_{random.random()}"))
     
-# def add_to_cart(user_id, movie_id):
+    doc = source_doc_ref.get()
+    
+    doc_data = doc.to_dict()
+    
+    new_doc_ref.set(doc_data)
+    
+    source_doc_ref.delete()
 
 
-# def get_user_cart(user_id):
+
+
+def get_user_cart():
+    db = firestore.client()
+    user_id = st.session_state.user_id
+    collection_ref = db.collection("cart")
+    docs = collection_ref.stream()
+    purchases = []
+
+    for doc in docs:
+        doc_id = str(doc.id)
+        x = doc_id.split("_")
+        if x[0] == user_id:
+            purchases.append(doc.to_dict())
+        return purchases
+
 
 
 # def checkout(user_id):

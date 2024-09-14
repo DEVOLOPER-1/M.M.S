@@ -5,7 +5,7 @@ import firebase_utils as fu
 import requests
 from PIL import Image
 from io import BytesIO
-
+# import cart as ca_rt 
     
 
 
@@ -33,7 +33,7 @@ def movie_card():
                 st.title(single_movie["original_title"])
                 st.subheader(f"Tagline: {single_movie["tagline"]}")
                 st.image(image)
-                st.button(label="Add To Cart" ,key=f"add_to_cart_{i}" , use_container_width=True)
+                st.button(label="Add To Cart" ,key=f"add_to_cart_{i}" , use_container_width=True , on_click=fu.add_to_cart(movie_id=single_movie["imdb_id"]))
                 with st.expander("More Details :point_down:"):
                     
                     st.markdown(f"""IDMB_id: {single_movie["imdb_id"]}\n
@@ -67,11 +67,11 @@ def movie_card():
 def main_page():
     st.title('Main Page')
     st.sidebar.title("Navigation")
-    choice = st.sidebar.radio("Go to", ["Movies Library", "Cart"])
+    choice = st.sidebar.radio("Go to", ["Movies Library", "Cart" , "Most Popular bet. users"])
     if choice == "Movies Library":
         movie_card()
         # st.button('Logout', on_click=logout)
-        st.button("Diplay More Movies" ,key="Display More Movies", on_click=movie_card)
+        # st.button("Diplay More Movies" ,key="Display More Movies", on_click=movie_card)
     # if choice == "Cart":
     
     
@@ -90,9 +90,13 @@ def login_page():
             # Add debug print
             print(f"Attempting to log in user: {email}")
             
-            success = au_th.sign_in(email, password)
-            if success:
-                st.session_state.idToken = success
+            return_of_sign_in = au_th.sign_in(email, password)
+            token = return_of_sign_in[0]
+            userid = return_of_sign_in[1]
+            if token and userid:
+                st.session_state.idToken = token
+                st.session_state.user_id = userid
+
                 st.success('Logged in successfully!')
                 st.session_state.authenticated = True
                 st.rerun()
