@@ -8,7 +8,7 @@ import random
 
 # credentials_path = "credentials.json"
 def initialize_firebase():
-    credentials_path = r"V:\INTERNSHIP\Hackathon Project\M.M.S\Syntax Implementation\credentials.json"
+    credentials_path = r"V:\INTERNSHIP\Hackathon Project\M.M.S\Syntax_Implementation\credentials.json"
     cred = credentials.Certificate(credentials_path)
     firebase_admin.initialize_app(credential=cred)
 
@@ -72,7 +72,7 @@ def upload_movies_to_firestore(uploaded_records_file_path):
 
 def get_movies_from_firestore():
     db = firestore.client()
-    movies_table_ref = db.collection("movies_table").limit(50)
+    movies_table_ref = db.collection("movies_table").limit(25)
     movies_metadata_lista = []
 
     for document in movies_table_ref.stream():
@@ -161,8 +161,6 @@ def add_to_cart(movie_id):
     source_doc_ref.delete()
 
 
-
-
 def get_user_cart():
     db = firestore.client()
     user_id = st.session_state.user_id
@@ -175,8 +173,28 @@ def get_user_cart():
         x = doc_id.split("_")
         if x[0] == user_id:
             purchases.append(doc.to_dict())
-        return purchases
+    st.session_state.cart_movies_count  = len(purchases)
+    return purchases
+
+def remove_from_cart(movie_id):
+    db = firestore.client()
+    user_id = st.session_state.user_id
+    new_doc_ref = db.collection("movies_table").document(str(movie_id))
+    collection_ref = db.collection("cart")
+    docs = collection_ref.stream()
+    for doc in docs:
+        doc_id = str(doc.id)
+        x = doc_id.split("_")
+        single_doc = doc.to_dict()
+        if x[0] == user_id and single_doc["imdb_id"] == movie_id:
+            new_doc_ref.set(single_doc)
+            doc.reference.delete()
+    st.session_state.cart_movies_count-1
 
 
-
+def calculate_popularity():
+    db = firestore.client()
+    user_id = st.session_state.user_id
+    collection_ref = db.collection("cart")
+    docs = collection_ref.stream()
 # def checkout(user_id):

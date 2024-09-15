@@ -1,19 +1,22 @@
 import streamlit as st
-# from streamlit_card import card
 import auth as au_th
 import firebase_utils as fu
 import requests
 from PIL import Image
 from io import BytesIO
-# import cart as ca_rt 
+import random
+import string
     
 
 
 
 
-def movie_card():
-    movie_data = fu.get_movies_from_firestore()
-
+def movie_card(user_choice):
+    if user_choice == "Movies Library":
+        movie_data = fu.get_movies_from_firestore()
+        
+    if user_choice == "Cart":
+        movie_data = fu.get_user_cart()[0]
     # Create columns
     cols = st.columns(1, gap="small", vertical_alignment='center')
 
@@ -27,13 +30,17 @@ def movie_card():
             image = Image.open(BytesIO(response.content))
         
         # Assign movie to a column
-        col_index = i % 1   # Determine which column to use
+        col_index = i % 1   
         with cols[col_index]:
             with st.container(border=True):
                 st.title(single_movie["original_title"])
                 st.subheader(f"Tagline: {single_movie["tagline"]}")
                 st.image(image)
-                st.button(label="Add To Cart" ,key=f"add_to_cart_{i}" , use_container_width=True , on_click=fu.add_to_cart(movie_id=single_movie["imdb_id"]))
+                if user_choice == "Movies Library":
+                    st.button(label="Add To Cart" ,key=f"add_to_cart_{i}" , use_container_width=True , on_click=fu.add_to_cart(movie_id=single_movie["imdb_id"]))
+                if user_choice == "Cart":
+                    st.button(label="Remove from cart" ,key=f"add_to_cart_{i}" , use_container_width=True , on_click=fu.remove_from_cart(movie_id=single_movie["imdb_id"]))
+
                 with st.expander("More Details :point_down:"):
                     
                     st.markdown(f"""IDMB_id: {single_movie["imdb_id"]}\n
@@ -54,27 +61,34 @@ def movie_card():
                     
 
 
-# def cart_summary(cart_items): 
+
     
     
     
-    
-    
+def checkout_message(price):
+    st.warning(body=f"Purcahase Done By total of {price} and ur purchase id is")
     
     
     
     
 def main_page():
-    st.title('Main Page')
+    
     st.sidebar.title("Navigation")
     choice = st.sidebar.radio("Go to", ["Movies Library", "Cart" , "Most Popular bet. users"])
     if choice == "Movies Library":
-        movie_card()
+        st.title('Movies Library')
+        st.subheader("Welcome :smile: :wave:!")
+        movie_card(user_choice="Movies Library")
         # st.button('Logout', on_click=logout)
         # st.button("Diplay More Movies" ,key="Display More Movies", on_click=movie_card)
-    # if choice == "Cart":
-    
-    
+    if choice == "Cart":  
+        st.title('Your Cart')
+        st.subheader("Welcome :smile: :wave:!")
+        movie_card(user_choice="Cart")
+        cart_movies_count = st.session_state.cart_movies_count
+        total = cart_movies_count*35
+        st.write(f"Remaining Movies in The Cart:{cart_movies_count} and Their Price is {total} $")
+        st.button(label="Click Here To Check Out" , on_click=checkout_message(total))
 
 
 
