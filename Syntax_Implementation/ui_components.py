@@ -6,7 +6,7 @@ from PIL import Image
 from io import BytesIO
 import random
 import string
-    
+import pandas as pd
 
 
 
@@ -20,6 +20,7 @@ def movie_card(user_choice):
     # Create columns
     cols = st.columns(1, gap="small", vertical_alignment='center')
 
+    
     for i, single_movie in enumerate(movie_data):
         # Fetch movie image
         response = requests.get(single_movie["image_url"]) 
@@ -40,7 +41,7 @@ def movie_card(user_choice):
                     st.button(label="Add To Cart" ,key=f"add_to_cart_{i}" , use_container_width=True , on_click=fu.add_to_cart(movie_id=single_movie["imdb_id"]))
                 if user_choice == "Cart":
                     st.button(label="Remove from cart" ,key=f"add_to_cart_{i}" , use_container_width=True , on_click=fu.remove_from_cart(movie_id=single_movie["imdb_id"]))
-
+                    update_movie_popover(movie_id=single_movie["imdb_id"])
                 with st.expander("More Details :point_down:"):
                     
                     st.markdown(f"""IDMB_id: {single_movie["imdb_id"]}\n
@@ -61,20 +62,44 @@ def movie_card(user_choice):
                     
 
 
-
+def update_movie_popover(movie_id):
+    with st.popover("Update Movie Metadata"):
+        genres = st.text_input(label="Enter Genres")
+        idmb_url = st.text_input(label = "Enter IDMB URL")
+        image_url = st.text_input(label = "Enter Image URL")
+        home_page = st.text_input(label = "Enter HOMEPAGE URL")
+        new_data_dict = {
+            "Genres":genres , 
+            "IDMB URL" : idmb_url, 
+            "IMAGE URL": image_url,
+            "HomePage": home_page,
+        }
+        if st.button("Send The New MetaData"):
+            fu.update_movie_data(movie_id=movie_id , new_data_dict=new_data_dict)
+            st.toast("Data Sent and Updated")
+    
     
     
     
 def checkout_message(price):
-    st.warning(body=f"Purcahase Done By total of {price} and ur purchase id is")
+    characters_and_digits = string.ascii_letters + string.digits
+    purchase_id = ""
+    i = 0
+    for i in range(10):
+        purchase_id.join(random.choice(characters_and_digits))
+        i+=1
+    st.warning(body=f"Purcahase Done By total of {price} $$ and ur purchase id is {purchase_id} !!" , icon="💸")
     
     
     
-    
+# def display_user_info():
+#     st.
+
+
 def main_page():
     
     st.sidebar.title("Navigation")
-    choice = st.sidebar.radio("Go to", ["Movies Library", "Cart" , "Most Popular bet. users"])
+    choice = st.sidebar.radio("Go to", ["Movies Library", "Cart" , "Most Popular bet. users" , "Update My Info"])
     if choice == "Movies Library":
         st.title('Movies Library')
         st.subheader("Welcome :smile: :wave:!")
@@ -84,11 +109,21 @@ def main_page():
     if choice == "Cart":  
         st.title('Your Cart')
         st.subheader("Welcome :smile: :wave:!")
-        movie_card(user_choice="Cart")
         cart_movies_count = st.session_state.cart_movies_count
         total = cart_movies_count*35
-        st.write(f"Remaining Movies in The Cart:{cart_movies_count} and Their Price is {total} $")
+        st.metric(label="Remaining Movies in The Cart" , value=cart_movies_count)
+        st.metric(label="Total Price" , value = total)
+        movie_card(user_choice="Cart")
         st.button(label="Click Here To Check Out" , on_click=checkout_message(total))
+        
+    if choice == "Most Popular bet. users":
+        st.title('Most Popular Movies bet. users')
+        df = pd.DataFrame(fu.calculate_popularity())
+        df = df[["movie"]]
+        st.table(data=df)
+        
+    # if choice == "Update My Info":
+    #     display_user_info
 
 
 
@@ -111,7 +146,7 @@ def login_page():
                 st.session_state.idToken = token
                 st.session_state.user_id = userid
 
-                st.success('Logged in successfully!')
+                st.toast('Logged in successfully!')
                 st.session_state.authenticated = True
                 st.rerun()
             else:
@@ -135,7 +170,7 @@ def sign_up_page():
             success = au_th.sign_up_user(email=str(email), password=str(password))
             
             if success:
-                st.success('Account created successfully!')
+                st.toast('Account created successfully!')
                 st.session_state.page = 'login'
                 st.rerun()
             else:
@@ -160,7 +195,7 @@ def reset_password_page():
             response = au_th.send_password_reset_mail(user_mail=str(mail))
             
             if response:
-                st.success('Password reset link was sent to your email!')
+                st.toast('Password reset link was sent to your email!')
                 st.session_state.page = 'login'
                 st.rerun()
             else:

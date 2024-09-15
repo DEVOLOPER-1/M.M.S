@@ -6,33 +6,35 @@ import firebase_utils as fu
 
 
 def main():
-    
+
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
+    
     if "page" not in st.session_state:
         st.session_state.page = "login"
-        
+
     if "loaded_movies" not in st.session_state:
         st.session_state.loaded_movies = set()
-    
+
     if "idToken" not in st.session_state:
         st.session_state.idToken = None
-        
-    if "user_id"not in st.session_state:
+
+    if "user_id" not in st.session_state:
         st.session_state.user_id = None
+    
     if "cart_movies_count" not in st.session_state:
         st.session_state.cart_movies_count = None
+    
     if st.session_state.authenticated:
         ui.main_page()
-    
-        
+
     # if "initialize_firebase" not in st.session_state:
     #         st.session_state.initialize_firebase = False
-            
+
     # if st.session_state.initialize_firebase == False:
     #     fu.initialize_firebase()
     #     st.session_state.initialize_firebase = True
-        
+
     else:
         st.sidebar.title("Navigation")
         choice = st.sidebar.radio("Go to", ["Login", "Sign Up", "Reset Password"])

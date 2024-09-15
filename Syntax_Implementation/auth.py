@@ -11,10 +11,11 @@ from email.mime.text import MIMEText
 load_dotenv(r"V:\INTERNSHIP\Hackathon Project\M.M.S\Syntax_Implementation\secrets.env")
 api_key = os.getenv("web_api_key")
 
-def verify_signed_up_email(link , registerer_email):
+
+def verify_signed_up_email(link, registerer_email):
 
     # creates SMTP session
-    s = smtplib.SMTP('smtp.gmail.com', 587)
+    s = smtplib.SMTP("smtp.gmail.com", 587)
     # start TLS for security
     s.starttls()
     my_mail = os.getenv("my_email")
@@ -24,98 +25,89 @@ def verify_signed_up_email(link , registerer_email):
     s.login(my_mail, my_pass)
     # create the email message
     msg = MIMEMultipart()
-    msg['From'] = my_mail
-    msg['To'] = registerer_email
-    msg['Subject'] = "Verify Your Email Address With M.M.S"
+    msg["From"] = my_mail
+    msg["To"] = registerer_email
+    msg["Subject"] = "Verify Your Email Address With M.M.S"
 
     body = f"We're happy you signed up with us. Please verify your email by clicking the link: {link}"
-    msg.attach(MIMEText(body, 'plain'))
-    
+    msg.attach(MIMEText(body, "plain"))
+
     s.sendmail(my_mail, registerer_email, msg)
     # terminating the session
     s.quit()
-    
-    
+
+
 def sign_up_user(email, password):
-    url = f'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={api_key}'
+    url = f"https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={api_key}"
     headers = {
-        'Content-Type': 'application/json', #specifiying the content type of headers to json
+        "Content-Type": "application/json",  # specifiying the content type of headers to json
     }
-    payload = {
-        'email': email,
-        'password': password,
-        'returnSecureToken': True
-    }
-    
+    payload = {"email": email, "password": password, "returnSecureToken": True}
+
     response = requests.post(url, headers=headers, data=json.dumps(payload))
     data = response.json()
     if response.status_code == 200:
         return True
 
 
-def sign_in(user_mail , user_pass):
+def sign_in(user_mail, user_pass):
 
-    url = f'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={api_key}'
+    url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={api_key}"
     headers = {
-        'Content-Type': 'application/json', #specifiying the content type of headers to json
+        "Content-Type": "application/json",  # specifiying the content type of headers to json
     }
-    payload = {
-        'email': user_mail,
-        'password': user_pass,
-        'returnSecureToken': True
-    }
-    
+    payload = {"email": user_mail, "password": user_pass, "returnSecureToken": True}
+
     response = requests.post(url, headers=headers, data=json.dumps(payload))
     data = response.json()
     print(data)
     if response.status_code == 200:
-        return [data["idToken"],data['localId']]
-    
+        return [data["idToken"], data["localId"]]
 
 
 def get_user_info(token):
     url = f"https://identitytoolkit.googleapis.com/v1/accounts:lookup?key={api_key}"
     headers = {
-        'Content-Type': 'application/json', #specifiying the content type of headers to json
+        "Content-Type": "application/json",  # specifiying the content type of headers to json
     }
-    payload = {
-            "idToken" : st.session_state.idToken
-    }
+    payload = {"idToken": st.session_state.idToken}
     response = requests.post(url, headers=headers, data=json.dumps(payload))
     data = response.json()
     print(data)
     # return data["displayName"]
 
-    
+
 def send_password_reset_mail(user_mail):
-    endpoint_url = f"https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key={api_key}"
+    endpoint_url = (
+        f"https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key={api_key}"
+    )
     headers = {
-        'Content-Type': 'application/json', #specifiying the content type of headers to json
+        "Content-Type": "application/json",  # specifiying the content type of headers to json
     }
-    payload = {
-            "requestType": "PASSWORD_RESET" ,
-            "email" : user_mail
-    }
+    payload = {"requestType": "PASSWORD_RESET", "email": user_mail}
     response = requests.post(endpoint_url, headers=headers, data=json.dumps(payload))
     if response.status_code == 200:
         return True
     else:
         return False
 
-def update_user_info(new_user_name , user_photo_url):
+
+def update_user_info(new_user_name, user_photo_url):
     idToken = st.session_state.idToken
-    endpoint_url = f"https://identitytoolkit.googleapis.com/v1/accounts:update?key={api_key}"
+    endpoint_url = (
+        f"https://identitytoolkit.googleapis.com/v1/accounts:update?key={api_key}"
+    )
     headers = {
-        'Content-Type': 'application/json', #specifiying the content type of headers to json
+        "Content-Type": "application/json",  # specifiying the content type of headers to json
     }
     payload = {
-    "idToken": str(idToken),
-    "displayName": str(new_user_name),
-    "photoUrl": str(user_photo_url),
-    "returnSecureToken": True
-}
+        "idToken": str(idToken),
+        "displayName": str(new_user_name),
+        "photoUrl": str(user_photo_url),
+        "returnSecureToken": True,
+    }
     response = requests.post(endpoint_url, headers=headers, data=json.dumps(payload))
-    if response.status_code == 200:
+    if response.status_code in [200,201]:
         return True
     else:
         return False
