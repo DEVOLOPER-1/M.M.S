@@ -11,16 +11,17 @@ import pandas as pd
 
 
 
+
 def movie_card(user_choice):
+    # Fetch movie data
     if user_choice == "Movies Library":
         movie_data = fu.get_movies_from_firestore()
-        
-    if user_choice == "Cart":
-        movie_data = fu.get_user_cart()[0]
-    # Create columns
-    cols = st.columns(1, gap="small", vertical_alignment='center')
+    elif user_choice == "Cart":
+        movie_data = fu.get_user_cart()
 
-    
+    # Create columns (e.g., 3 columns for the movie cards)
+    cols = st.columns(1)
+
     for i, single_movie in enumerate(movie_data):
         # Fetch movie image
         response = requests.get(single_movie["image_url"]) 
@@ -29,54 +30,62 @@ def movie_card(user_choice):
             image = Image.open(image_path)
         else:    
             image = Image.open(BytesIO(response.content))
-        
+
         # Assign movie to a column
-        col_index = i % 1   
-        with cols[col_index]:
-            with st.container(border=True):
+        col_index = i % 3  # Change 3 to however many columns you want
+        with cols[0]:
+            with st.container():
                 st.title(single_movie["original_title"])
-                st.subheader(f"Tagline: {single_movie["tagline"]}")
+                st.subheader(f"Tagline: {single_movie['tagline']}")
                 st.image(image)
+                movie_id = single_movie["imdb_id"]
+                
                 if user_choice == "Movies Library":
-                    st.button(label="Add To Cart" ,key=f"add_to_cart_{i}" , use_container_width=True , on_click=fu.add_to_cart(movie_id=single_movie["imdb_id"]))
-                if user_choice == "Cart":
-                    st.button(label="Remove from cart" ,key=f"add_to_cart_{i}" , use_container_width=True , on_click=fu.remove_from_cart(movie_id=single_movie["imdb_id"]))
-                    update_movie_popover(movie_id=single_movie["imdb_id"])
-                with st.expander("More Details :point_down:"):
-                    
-                    st.markdown(f"""IDMB_id: {single_movie["imdb_id"]}\n
-                        For Adults: {single_movie["adult"]}\n
-                        Genres: {single_movie["genres"]}\n
-                        HomePage: {single_movie["homepage"]}\n
-                        Popularity: {single_movie["popularity"]}\n
-                        Production Companies: {single_movie["production_companies"]}\n
-                        Production Countries: {single_movie["production_countries"]}
-                        Release Date: {single_movie["release_date"]}\n
-                        Spoken Languages: {single_movie["spoken_languages"]}\n
-                        Status: {single_movie["status"]}\n
-                        Vote Average: {single_movie["vote_average"]}\n
-                        IDMB URL: {single_movie["idmb_url"]}\n
-                        IMAGE URL: {single_movie["image_url"]}\n
-                        Overview: {single_movie["overview"]}\n
+                    st.button(label="Add To Cart", key=f"add_to_cart_{i}", use_container_width=True, 
+                            on_click=lambda: fu.add_to_cart(movie_id=single_movie["imdb_id"]))
+
+                
+
+                    with st.expander("More Details :point_down:"):
+                        st.markdown(f"""
+                        IMDB ID: {single_movie['imdb_id']}\n
+                        For Adults: {single_movie['adult']}\n
+                        Genres: {single_movie['genres']}\n
+                        HomePage: {single_movie['homepage']}\n
+                        Popularity: {single_movie['popularity']}\n
+                        Production Companies: {single_movie['production_companies']}\n
+                        Production Countries: {single_movie['production_countries']}\n
+                        Release Date: {single_movie['release_date']}\n
+                        Spoken Languages: {single_movie['spoken_languages']}\n
+                        Status: {single_movie['status']}\n
+                        Vote Average: {single_movie['vote_average']}\n
+                        IMDB URL: {single_movie['idmb_url']}\n
+                        Overview: {single_movie['overview']}\n
                         """)
+                    with st.expander("Update Movie Metadata"):
+                        with st.form(f"update_movie_{movie_id}"):
+                                genres = st.text_input(label="Enter Genres" , key=f"genres_{movie_id}")
+                                idmb_url = st.text_input(label = "Enter IDMB URL" , key=f"idmb_url_{movie_id}")
+                                image_url = st.text_input(label = "Enter Image URL" , key=f"img_url_{movie_id}")
+                                home_page = st.text_input(label = "Enter HOMEPAGE URL" , key=f"hm_page_{movie_id}")
+                                
+                                new_data_dict = {
+                                    "Genres":genres , 
+                                    "IDMB URL" : idmb_url, 
+                                    "IMAGE URL": image_url,
+                                    "HomePage": home_page,
+                                }
+                                form_submit_button = st.form_submit_button("Send The New MetaData" ,use_container_width=True)
+                                if form_submit_button:
+                                    fu.update_movie_data(movie_id=movie_id , new_data_dict=new_data_dict)
+                                    st.toast("Data Sent and Updated")
+                elif user_choice == "Cart":
+                    st.button(label="Remove from Cart", key=f"remove_from_cart_{i}", use_container_width=True, 
+                            on_click=lambda: fu.remove_from_cart(movie_id=single_movie["imdb_id"]))
                     
 
 
-def update_movie_popover(movie_id):
-    with st.popover("Update Movie Metadata"):
-        genres = st.text_input(label="Enter Genres")
-        idmb_url = st.text_input(label = "Enter IDMB URL")
-        image_url = st.text_input(label = "Enter Image URL")
-        home_page = st.text_input(label = "Enter HOMEPAGE URL")
-        new_data_dict = {
-            "Genres":genres , 
-            "IDMB URL" : idmb_url, 
-            "IMAGE URL": image_url,
-            "HomePage": home_page,
-        }
-        if st.button("Send The New MetaData"):
-            fu.update_movie_data(movie_id=movie_id , new_data_dict=new_data_dict)
-            st.toast("Data Sent and Updated")
+
     
     
     
@@ -109,17 +118,17 @@ def main_page():
     if choice == "Cart":  
         st.title('Your Cart')
         st.subheader("Welcome :smile: :wave:!")
-        cart_movies_count = st.session_state.cart_movies_count
+        cart_movies_count = int(st.session_state.cart_movies_count)
         total = cart_movies_count*35
-        st.metric(label="Remaining Movies in The Cart" , value=cart_movies_count)
-        st.metric(label="Total Price" , value = total)
+        st.metric(label="Remaining Movies in The Cart 🛒" , value=cart_movies_count)
+        st.metric(label="Total Price 💸💸" , value = total)
         movie_card(user_choice="Cart")
         st.button(label="Click Here To Check Out" , on_click=checkout_message(total))
         
     if choice == "Most Popular bet. users":
         st.title('Most Popular Movies bet. users')
-        df = pd.DataFrame(fu.calculate_popularity())
-        df = df[["movie"]]
+        # data = fu.calculate_popularity()
+        # df = pd.DataFrame.from_dict(data, orient='index')
         st.table(data=df)
         
     # if choice == "Update My Info":

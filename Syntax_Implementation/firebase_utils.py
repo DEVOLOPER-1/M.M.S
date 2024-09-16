@@ -202,4 +202,4 @@ def calculate_popularity():
         else:
             popular_movies_counts[title] += 1
     # sorted_dict = sorted(popular_movies_counts)
-    return popular_movies_counts  # sorted_dict
+    return [popular_movies_counts]  # sorted_dict

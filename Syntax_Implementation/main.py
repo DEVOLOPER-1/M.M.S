@@ -23,7 +23,8 @@ def main():
         st.session_state.user_id = None
     
     if "cart_movies_count" not in st.session_state:
-        st.session_state.cart_movies_count = None
+        st.session_state.cart_movies_count = 0
+
     
     if st.session_state.authenticated:
         ui.main_page()
