@@ -120,8 +120,11 @@ def main_page():
         st.subheader("Welcome :smile: :wave:!")
         cart_movies_count = int(st.session_state.cart_movies_count)
         total = cart_movies_count*35
-        st.metric(label="Remaining Movies in The Cart 🛒" , value=cart_movies_count)
-        st.metric(label="Total Price 💸💸" , value = total)
+        count_col , price_col = st.columns(2 , gap="large")
+        with count_col:
+            st.metric(label="Remaining Movies in The Cart 🛒" , value=cart_movies_count)
+        with price_col:    
+            st.metric(label="Total Price 💸💸" , value = total)
         movie_card(user_choice="Cart")
         st.button(label="Click Here To Check Out" , on_click=checkout_message(total))
         
