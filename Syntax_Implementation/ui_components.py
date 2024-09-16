@@ -15,9 +15,9 @@ import pandas as pd
 def movie_card(user_choice):
     # Fetch movie data
     if user_choice == "Movies Library":
-        movie_data = fu.get_movies_from_firestore()
+        movie_data = st.session_state.movies_metadata_lista
     elif user_choice == "Cart":
-        movie_data = fu.get_user_cart()
+        movie_data = st.session_state.user_purchases
 
     # Create columns (e.g., 3 columns for the movie cards)
     cols = st.columns(1)
@@ -97,7 +97,7 @@ def checkout_message(price):
     for i in range(10):
         purchase_id.join(random.choice(characters_and_digits))
         i+=1
-    st.warning(body=f"Purcahase Done By total of {price} $$ and ur purchase id is {purchase_id} !!" , icon="💸")
+    st.success(body=f"Purcahase Done By total of {price} $$ and ur purchase id is {purchase_id} !!" , icon="💸")
     
     
     
@@ -110,12 +110,14 @@ def main_page():
     st.sidebar.title("Navigation")
     choice = st.sidebar.radio("Go to", ["Movies Library", "Cart" , "Most Popular bet. users" , "Update My Info"])
     if choice == "Movies Library":
+        fu.get_movies_from_firestore()
         st.title('Movies Library')
         st.subheader("Welcome :smile: :wave:!")
         movie_card(user_choice="Movies Library")
         # st.button('Logout', on_click=logout)
         # st.button("Diplay More Movies" ,key="Display More Movies", on_click=movie_card)
-    if choice == "Cart":  
+    if choice == "Cart":
+        fu.get_user_cart()
         st.title('Your Cart')
         st.subheader("Welcome :smile: :wave:!")
         cart_movies_count = int(st.session_state.cart_movies_count)
@@ -127,6 +129,8 @@ def main_page():
             st.metric(label="Total Price 💸💸" , value = total)
         movie_card(user_choice="Cart")
         st.button(label="Click Here To Check Out" , on_click=checkout_message(total))
+
+        # st.button(label="Click Here To Check Out" , on_click=checkout_message(total))
         
     if choice == "Most Popular bet. users":
         st.title('Most Popular Movies bet. users')

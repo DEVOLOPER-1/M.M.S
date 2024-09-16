@@ -25,7 +25,10 @@ def main():
     if "cart_movies_count" not in st.session_state:
         st.session_state.cart_movies_count = 0
 
-    
+    if "user_purchases" not in st.session_state:
+        st.session_state.user_purchases = []
+    if "movies_metadata_lista" not in st.session_state:
+        st.session_state.movies_metadata_lista = []
     if st.session_state.authenticated:
         ui.main_page()
 

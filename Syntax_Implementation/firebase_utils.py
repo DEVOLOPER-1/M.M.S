@@ -82,7 +82,7 @@ def upload_movies_to_firestore(uploaded_records_file_path):
 def get_movies_from_firestore():
     db = firestore.client()
     movies_table_ref = db.collection("movies_table").limit(25)
-    movies_metadata_lista = []
+    movies_metadata_lista = st.session_state.movies_metadata_lista
 
     for document in movies_table_ref.stream():
 
@@ -92,7 +92,6 @@ def get_movies_from_firestore():
             movies_metadata_lista.append(output)
         else:
             continue
-    return movies_metadata_lista
 
 
 def add_movie_by_user(movie_id, movie_name, adult, status):
@@ -161,7 +160,7 @@ def get_user_cart():
     user_id = st.session_state.user_id
     collection_ref = db.collection("cart")
     docs = collection_ref.stream()
-    purchases = []
+    purchases = st.session_state.user_purchases
 
     for doc in docs:
         doc_id = str(doc.id)
@@ -169,7 +168,6 @@ def get_user_cart():
         if x[0] == user_id:
             purchases.append(doc.to_dict())
     st.session_state.cart_movies_count = len(purchases)
-    return purchases
 
 
 def remove_from_cart(movie_id):
