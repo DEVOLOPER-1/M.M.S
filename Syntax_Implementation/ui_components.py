@@ -70,10 +70,10 @@ def movie_card(user_choice):
                                 home_page = st.text_input(label = "Enter HOMEPAGE URL" , key=f"hm_page_{movie_id}")
                                 
                                 new_data_dict = {
-                                    "Genres":genres , 
-                                    "IDMB URL" : idmb_url, 
-                                    "IMAGE URL": image_url,
-                                    "HomePage": home_page,
+                                    "genres":genres , 
+                                    "idmb_url" : idmb_url, 
+                                    "image_url": image_url,
+                                    "homepage": home_page,
                                 }
                                 form_submit_button = st.form_submit_button("Send The New MetaData" ,use_container_width=True)
                                 if form_submit_button:
