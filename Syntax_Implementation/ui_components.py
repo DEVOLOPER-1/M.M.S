@@ -95,9 +95,9 @@ def checkout_message(price):
     purchase_id = ""
     i = 0
     for i in range(10):
-        purchase_id.join(random.choice(characters_and_digits))
+        purchase_id += "".join(random.choice(characters_and_digits))
         i+=1
-    st.success(body=f"Purcahase Done By total of {price} $$ and ur purchase id is {purchase_id} !!" , icon="💸")
+    st.success(body=f"Purcahase Done By total of {price} $$ and ur purchase id is **{purchase_id}** !!" , icon="💸")
     
     
     
@@ -128,7 +128,9 @@ def main_page():
         with price_col:    
             st.metric(label="Total Price 💸💸" , value = total)
         movie_card(user_choice="Cart")
-        st.button(label="Click Here To Check Out" , on_click=checkout_message(total))
+        checkout_button = st.button(label="Click Here To Check Out")
+        if checkout_button:
+            checkout_message(total)
 
         # st.button(label="Click Here To Check Out" , on_click=checkout_message(total))
         
