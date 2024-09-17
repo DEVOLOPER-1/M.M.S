@@ -159,14 +159,31 @@ def main_page():
 
     if choice == "Most Popular bet. users":
         st.title("Most Popular Movies bet. users")
-        data = fu.calculate_popularity()
-        # columns_names = ["movie" , "popularity_index"]
-        df = pd.DataFrame(data=data)
-        df.sort_values(by="popularity_index"  , inplace=True , ascending=False)
-        st.table(data=df)
+        st.subheader("Welcome :smile: :wave:!")
 
-    # if choice == "Update My Info":
-    #     display_user_info
+        data = fu.calculate_popularity()
+        df = pd.DataFrame(data=data)
+        col1, col2, col3 = st.columns(3)
+        with col3:
+            sort_table_toggle = st.toggle("Sorted Dataframe")
+        st.table(data=df)
+        if sort_table_toggle:
+            df_sorted = df.sort_values(by="popularity_index", ascending=False)
+            st.table(df_sorted)
+
+    if choice == "Update My Info":
+        st.title("Most Popular Movies bet. users")
+        st.subheader("Have a look on ur info before pdating it 👀😄")
+        col1, col2 = st.columns(2, gap="small")
+
+        with col1:
+            token = st.session_state.idToken
+            user_info = au_th.get_user_info(token=token)
+            st.markdown(
+                f"""
+                        
+                        """
+            )
 
 
 def login_page():

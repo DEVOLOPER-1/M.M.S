@@ -201,7 +201,9 @@ def remove_from_cart(movie_id):
     loaded_movies_ids_set = st.session_state.loaded_movies
     movies_metadata_lista = st.session_state.movies_metadata_lista
     user_purchases = st.session_state.user_purchases
-    movies_in_cart = {purchase.get("imdb_id") for purchase in user_purchases} #I used the set as it's faster for implementation and it accepts only unique values
+    movies_in_cart = {
+        purchase.get("imdb_id") for purchase in user_purchases
+    }  # I used the set as it's faster for implementation and it accepts only unique values
     for doc in docs:
         doc_id = str(doc.id)
         x = doc_id.split("_")
@@ -210,7 +212,7 @@ def remove_from_cart(movie_id):
             if single_doc["imdb_id"] in movies_in_cart:
                 loaded_movies_ids_set.add(movie_id)
                 movies_metadata_lista.append(single_doc)
-                #Re-updating the values in user_purchases session states
+                # Re-updating the values in user_purchases session states
                 st.session_state.user_purchases = [
                     purchase
                     for purchase in user_purchases
@@ -229,7 +231,7 @@ def calculate_popularity():
     db = firestore.client()
     collection_ref = db.collection("cart")
     docs = collection_ref.stream()
-    popular_movies_counts = {"movie" : "popularity_index"}
+    popular_movies_counts = {"movie": "popularity_index"}
     movies_names = []
     popularity_scores = []
     for doc in docs:
@@ -238,8 +240,10 @@ def calculate_popularity():
         popularity = round(single_doc["popularity"])
         movies_names.append(title)
         if popularity == 0:
-                popularity+=1
+            popularity += 1
         popularity_scores.append(popularity)
-    popular_movies_counts = {"movie" : movies_names,
-                            "popularity_index" : popularity_scores}
+    popular_movies_counts = {
+        "movie": movies_names,
+        "popularity_index": popularity_scores,
+    }
     return popular_movies_counts  # sorted_dict

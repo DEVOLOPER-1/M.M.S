@@ -70,11 +70,11 @@ def get_user_info(token):
     headers = {
         "Content-Type": "application/json",  # specifiying the content type of headers to json
     }
-    payload = {"idToken": st.session_state.idToken}
+    payload = {"idToken": str(st.session_state.idToken)}
     response = requests.post(url, headers=headers, data=json.dumps(payload))
     data = response.json()
-    print(data)
-    # return data["displayName"]
+    # print(data)
+    return data
 
 
 def send_password_reset_mail(user_mail):
