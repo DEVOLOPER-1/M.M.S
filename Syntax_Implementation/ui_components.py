@@ -152,7 +152,7 @@ def main_page():
             st.metric(label="Total Price 💸💸", value=total)
         movie_card(user_choice="Cart")
         checkout_button = st.button(label="Click Here To Check Out")
-        if checkout_button:
+        if checkout_button and total > 0:
             checkout_message(total)
 
         # st.button(label="Click Here To Check Out" , on_click=checkout_message(total))
@@ -172,18 +172,54 @@ def main_page():
             st.table(df_sorted)
 
     if choice == "Update My Info":
-        st.title("Most Popular Movies bet. users")
-        st.subheader("Have a look on ur info before pdating it 👀😄")
-        col1, col2 = st.columns(2, gap="small")
+        st.title("User Info ℹ️")
+        st.subheader("Have a look on ur info before updating it 👀😄")
+        # col1, col2 = st.columns(2, gap="small")
 
-        with col1:
+        with st.container(border=True):
             token = st.session_state.idToken
             user_info = au_th.get_user_info(token=token)
+
             st.markdown(
                 f"""
-                        
-                        """
+                ### 👤 User Profile
+
+                📧 **Email:** 
+                {user_info['users'][0]['email']}
+                
+                🏷️ **User name:** 
+                {user_info['users'][0]['providerUserInfo'][0]['displayName']}
+                
+                🖼️ **Photo Url:** 
+                {user_info['users'][0]['providerUserInfo'][0]['photoUrl']}
+                
+                🕒 **Last Refresh:** 
+                {user_info['users'][0]['lastRefreshAt'][:10]}
+                
+                ✅ **Verified Email:** 
+                {'Yes ✔️' if user_info['users'][0]['emailVerified'] else 'No ❌'}
+                """
             )
+            with st.expander("Update Info"):
+                with st.form(f"Update Personal Data Form", clear_on_submit=True):
+                    user_name = st.text_input(label="Enter New User name")
+                    photo_url = st.text_input(label="Enter Personal Photo Url")
+
+                    new_data_dict = {
+                        "idToken": str(st.session_state.idToken),
+                        "displayName": str(user_name),
+                        "photoUrl": str(photo_url),
+                        "returnSecureToken": True,
+                    }
+                    submit_button = st.form_submit_button(
+                        "Submit New Data",
+                        use_container_width=True,
+                        on_click=au_th.update_user_info,
+                        args=(new_data_dict,),
+                    )
+                    if submit_button:
+                        st.success("Sent Successfully")
+                        st.balloons()
 
 
 def login_page():

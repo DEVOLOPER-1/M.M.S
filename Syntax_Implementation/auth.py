@@ -73,7 +73,7 @@ def get_user_info(token):
     payload = {"idToken": str(st.session_state.idToken)}
     response = requests.post(url, headers=headers, data=json.dumps(payload))
     data = response.json()
-    # print(data)
+    print(f"getting {data}")
     return data
 
 
@@ -92,7 +92,7 @@ def send_password_reset_mail(user_mail):
         return False
 
 
-def update_user_info(new_user_name, user_photo_url):
+def update_user_info(dict__of_new_attributes):
     idToken = st.session_state.idToken
     endpoint_url = (
         f"https://identitytoolkit.googleapis.com/v1/accounts:update?key={api_key}"
@@ -100,12 +100,7 @@ def update_user_info(new_user_name, user_photo_url):
     headers = {
         "Content-Type": "application/json",  # specifiying the content type of headers to json
     }
-    payload = {
-        "idToken": str(idToken),
-        "displayName": str(new_user_name),
-        "photoUrl": str(user_photo_url),
-        "returnSecureToken": True,
-    }
+    payload = dict__of_new_attributes
     response = requests.post(endpoint_url, headers=headers, data=json.dumps(payload))
     if response.status_code in [200, 201]:
         return True
