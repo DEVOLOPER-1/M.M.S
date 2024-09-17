@@ -201,7 +201,7 @@ def remove_from_cart(movie_id):
     loaded_movies_ids_set = st.session_state.loaded_movies
     movies_metadata_lista = st.session_state.movies_metadata_lista
     user_purchases = st.session_state.user_purchases
-    movies_in_cart = {purchase.get("imdb_id") for purchase in user_purchases}
+    movies_in_cart = {purchase.get("imdb_id") for purchase in user_purchases} #I used the set as it's faster for implementation and it accepts only unique values
     for doc in docs:
         doc_id = str(doc.id)
         x = doc_id.split("_")
@@ -210,7 +210,7 @@ def remove_from_cart(movie_id):
             if single_doc["imdb_id"] in movies_in_cart:
                 loaded_movies_ids_set.add(movie_id)
                 movies_metadata_lista.append(single_doc)
-
+                #Re-updating the values in user_purchases session states
                 st.session_state.user_purchases = [
                     purchase
                     for purchase in user_purchases
