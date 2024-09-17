@@ -107,7 +107,7 @@ def update_user_info(new_user_name, user_photo_url):
         "returnSecureToken": True,
     }
     response = requests.post(endpoint_url, headers=headers, data=json.dumps(payload))
-    if response.status_code in [200,201]:
+    if response.status_code in [200, 201]:
         return True
     else:
         return False

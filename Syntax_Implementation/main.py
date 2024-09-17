@@ -9,7 +9,7 @@ def main():
 
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
-    
+
     if "page" not in st.session_state:
         st.session_state.page = "login"
 
@@ -21,7 +21,7 @@ def main():
 
     if "user_id" not in st.session_state:
         st.session_state.user_id = None
-    
+
     if "cart_movies_count" not in st.session_state:
         st.session_state.cart_movies_count = 0
 
@@ -29,6 +29,7 @@ def main():
         st.session_state.user_purchases = []
     if "movies_metadata_lista" not in st.session_state:
         st.session_state.movies_metadata_lista = []
+
     if st.session_state.authenticated:
         ui.main_page()
 

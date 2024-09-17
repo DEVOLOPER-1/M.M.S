@@ -138,6 +138,7 @@ def delete_movie(movie_id):
 
 
 def add_to_cart(movie_id):
+
     db = firestore.client()
 
     user_id = st.session_state.user_id
@@ -151,8 +152,15 @@ def add_to_cart(movie_id):
     new_doc_ref.set(doc_data)
 
     source_doc_ref.delete()
-    
-    st.rerun()
+    loaded_movies_ids_set = st.session_state.loaded_movies
+    lista = st.session_state.movies_metadata_lista
+
+    for movie in lista:
+        if movie.get("imdb_id") == movie_id:
+            movie_index = lista.index(movie)
+            lista.pop(movie_index)
+            loaded_movies_ids_set.remove(movie_id)
+    # st.rerun()
 
 
 def get_user_cart():
@@ -162,11 +170,25 @@ def get_user_cart():
     docs = collection_ref.stream()
     purchases = st.session_state.user_purchases
 
+    existing_imdb_ids = {
+        purchase.get("imdb_id") for purchase in st.session_state.user_purchases
+    }
+
     for doc in docs:
-        doc_id = str(doc.id)
-        x = doc_id.split("_")
-        if x[0] == user_id:
-            purchases.append(doc.to_dict())
+        try:
+            doc_id = str(doc.id)
+            x = doc_id.split("_")
+            single_doc = doc.to_dict()
+
+            if x[0] == user_id:
+                idmb_id = single_doc.get("imdb_id")
+
+                if idmb_id and idmb_id not in existing_imdb_ids:
+                    purchases.append(single_doc)
+                    existing_imdb_ids.add(idmb_id)
+
+        except Exception as e:
+            st.error(f"Error processing document {doc.id}: {e}")
     st.session_state.cart_movies_count = len(purchases)
 
 
@@ -176,15 +198,31 @@ def remove_from_cart(movie_id):
     new_doc_ref = db.collection("movies_table").document(str(movie_id))
     collection_ref = db.collection("cart")
     docs = collection_ref.stream()
+    loaded_movies_ids_set = st.session_state.loaded_movies
+    movies_metadata_lista = st.session_state.movies_metadata_lista
+    user_purchases = st.session_state.user_purchases
+    movies_in_cart = {purchase.get("imdb_id") for purchase in user_purchases}
     for doc in docs:
         doc_id = str(doc.id)
         x = doc_id.split("_")
         single_doc = doc.to_dict()
         if x[0] == user_id and single_doc["imdb_id"] == movie_id:
-            new_doc_ref.set(single_doc)
-            doc.reference.delete()
-            st.session_state.cart_movies_count - 1
-    st.rerun()
+            if single_doc["imdb_id"] in movies_in_cart:
+                loaded_movies_ids_set.add(movie_id)
+                movies_metadata_lista.append(single_doc)
+
+                st.session_state.user_purchases = [
+                    purchase
+                    for purchase in user_purchases
+                    if purchase.get("imdb_id") != movie_id
+                ]
+
+                new_doc_ref.set(single_doc)
+
+                doc.reference.delete()
+                st.session_state.cart_movies_count -= 1
+
+    # st.rerun()
 
 
 def calculate_popularity():
