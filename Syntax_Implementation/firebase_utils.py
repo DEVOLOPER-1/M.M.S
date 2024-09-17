@@ -229,13 +229,17 @@ def calculate_popularity():
     db = firestore.client()
     collection_ref = db.collection("cart")
     docs = collection_ref.stream()
-    popular_movies_counts = {"movie": "popularity_index"}
+    popular_movies_counts = {"movie" : "popularity_index"}
+    movies_names = []
+    popularity_scores = []
     for doc in docs:
         single_doc = doc.to_dict()
         title = single_doc["original_title"]
-        if title not in popular_movies_counts:
-            popular_movies_counts[title] = 1
-        else:
-            popular_movies_counts[title] += 1
-    # sorted_dict = sorted(popular_movies_counts)
-    return [popular_movies_counts]  # sorted_dict
+        popularity = round(single_doc["popularity"])
+        movies_names.append(title)
+        if popularity == 0:
+                popularity+=1
+        popularity_scores.append(popularity)
+    popular_movies_counts = {"movie" : movies_names,
+                            "popularity_index" : popularity_scores}
+    return popular_movies_counts  # sorted_dict

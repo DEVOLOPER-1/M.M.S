@@ -159,8 +159,10 @@ def main_page():
 
     if choice == "Most Popular bet. users":
         st.title("Most Popular Movies bet. users")
-        # data = fu.calculate_popularity()
-        # df = pd.DataFrame.from_dict(data, orient='index')
+        data = fu.calculate_popularity()
+        # columns_names = ["movie" , "popularity_index"]
+        df = pd.DataFrame(data=data)
+        df.sort_values(by="popularity_index"  , inplace=True , ascending=False)
         st.table(data=df)
 
     # if choice == "Update My Info":
