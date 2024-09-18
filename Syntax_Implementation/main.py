@@ -29,16 +29,13 @@ def main():
         st.session_state.user_purchases = []
     if "movies_metadata_lista" not in st.session_state:
         st.session_state.movies_metadata_lista = []
+        
 
+        
     if st.session_state.authenticated:
         ui.main_page()
 
-    # if "initialize_firebase" not in st.session_state:
-    #         st.session_state.initialize_firebase = False
 
-    # if st.session_state.initialize_firebase == False:
-    #     fu.initialize_firebase()
-    #     st.session_state.initialize_firebase = True
 
     else:
         st.sidebar.title("Navigation")

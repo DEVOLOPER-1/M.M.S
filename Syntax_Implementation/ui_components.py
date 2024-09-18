@@ -239,6 +239,7 @@ def main_page():
                     )
                     if submit_button:
                         st.success("Sent Successfully")
+                        st.toast("It Will take about 5 min ⏰ to apply changes !")
                         st.balloons()
 
 
