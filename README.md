@@ -22,74 +22,65 @@ There are two ways to get M.M.S up and running on your local machine. Choose the
 ### Method 1: Create Your Own Virtual Environment
 
 1. Clone the repository:
-'''
- git clone https://github.com/your-username/M.M.S.git 
-   cd M.M.S
-   '''
+    ```bash
+    git clone https://github.com/DEVOLOPER-1/M.M.S.git 
+    cd M.M.S
+    ```
 2. Create a virtual environment:
-  '''
-      python -m venv venv
-   '''
-
-
+    ```bash
+    python -m venv venv
+    ```
 
 3. Activate the virtual environment:
 - On Windows:
-  ```
-  venv\Scripts\activate
-  ```
+    ```bash
+    venv\Scripts\activate
+    ```
 - On macOS and Linux:
-  ```
-  source venv/bin/activate
-  ```
+    ```bash
+    source venv/bin/activate
+    ```
 
 4. Install the required packages:
-    '''
-      pip install -r requirements.txt
-   '''
-
-
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 5. Set up your Firebase configuration:
 - Create a `firebase_config.json` file in the project root
 - Add your Firebase project credentials to this file
 
 6. Run the Streamlit app:
- '''
-     streamlit run app.py
-
-   '''
-
-
+    ```bash
+    streamlit run app.py
+    ```
 
 ### Method 2: Use the Existing Virtual Environment
 
 1. Clone the repository with the virtual environment:
-  '''
-   git clone --recursive https://github.com/your-username/M.M.S.git 
-   cd M.M.S
-   '''
+    ```bash
+    git clone --recursive https://github.com/DEVOLOPER-1/M.M.S.git 
+    cd M.M.S
+    ```
 
 2. Activate the existing virtual environment:
 - On Windows:
-  ```
-  .venv\Scripts\activate
-  ```
+    ```bash
+    .venv\Scripts\activate
+    ```
 - On macOS and Linux:
-  ```
-  source .venv/bin/activate
-  ```
+    ```bash
+    source .venv/bin/activate
+    ```
 
 3. Set up your Firebase configuration:
 - Create a `firebase_config.json` file in the project root
 - Add your Firebase project credentials to this file
 
 4. Run the Streamlit app:
-  '''
-      streamlit run main.py
-   '''
-
-
+    ```bash
+    streamlit run main.py
+    ```
 
 ## 🔧 Configuration
 
@@ -122,11 +113,12 @@ We welcome contributions to M.M.S! Here's how you can help:
 
 ## 📞 Contact
 
-Have questions or want to connect? Reach out to me on LinkedIn!
+Have questions or want to connect? Reach out to me on LinkedIn or GitHub!
 
-[Connect with me on LinkedIn](https://www.linkedin.com/in/your-profile/)
+[Connect with me on LinkedIn](https://www.linkedin.com/in/youssef-mohammad-9341a71a7)
+
+[View the GitHub repository](https://github.com/DEVOLOPER-1/M.M.S)
 
 ---
 
 Happy movie managing! 🍿✨
-
