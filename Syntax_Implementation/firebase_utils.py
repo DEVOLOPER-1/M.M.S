@@ -160,6 +160,8 @@ def add_to_cart(movie_id):
             movie_index = lista.index(movie)
             lista.pop(movie_index)
             loaded_movies_ids_set.remove(movie_id)
+
+    st.toast("Done ✅ ,  Added To Cart !")
     # st.rerun()
 
 
@@ -223,7 +225,7 @@ def remove_from_cart(movie_id):
 
                 doc.reference.delete()
                 st.session_state.cart_movies_count -= 1
-
+                st.toast("Done ✅ ,  Removed From Cart !")
     # st.rerun()
 
 

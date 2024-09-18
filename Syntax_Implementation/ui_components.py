@@ -120,6 +120,7 @@ def checkout_message(price):
         body=f"Purcahase Done By total of {price} $$ and ur purchase id is **{purchase_id}** !!",
         icon="💸",
     )
+    st.balloons()
 
 
 # def display_user_info():
@@ -151,7 +152,9 @@ def main_page():
         with price_col:
             st.metric(label="Total Price 💸💸", value=total)
         movie_card(user_choice="Cart")
-        checkout_button = st.button(label="Click Here To Check Out")
+        checkout_button = st.button(
+            label="Click Here To Check Out", use_container_width=True
+        )
         if checkout_button and total > 0:
             checkout_message(total)
 
@@ -166,40 +169,57 @@ def main_page():
         col1, col2, col3 = st.columns(3)
         with col3:
             sort_table_toggle = st.toggle("Sorted Dataframe")
-        st.table(data=df)
         if sort_table_toggle:
             df_sorted = df.sort_values(by="popularity_index", ascending=False)
-            st.table(df_sorted)
+            st.dataframe(df_sorted, use_container_width=True, hide_index=True)
+        else:
+            st.dataframe(data=df, use_container_width=True, hide_index=True)
 
     if choice == "Update My Info":
         st.title("User Info ℹ️")
-        st.subheader("Have a look on ur info before updating it 👀😄")
-        # col1, col2 = st.columns(2, gap="small")
+        st.subheader("Have a look on your info before updating it 👀😄")
 
-        with st.container(border=True):
-            token = st.session_state.idToken
-            user_info = au_th.get_user_info(token=token)
+        with st.container():
+            try:
+                token = st.session_state.idToken
+                user_info = au_th.get_user_info(token=token)
+                user_data = user_info.get("users", [{}])[0]
 
-            st.markdown(
-                f"""
-                ### 👤 User Profile
+                # Safely retrieve each piece of user information
+                email = user_data.get("email", "N/A")
+                display_name = user_data.get("providerUserInfo", [{}])[0].get(
+                    "displayName", "N/A"
+                )
+                photo_url = user_data.get("providerUserInfo", [{}])[0].get(
+                    "photoUrl", "N/A"
+                )
+                last_refresh = (
+                    user_data.get("lastRefreshAt", "N/A")[:10]
+                    if "lastRefreshAt" in user_data
+                    else "N/A"
+                )
+                email_verified = (
+                    "Yes ✔️" if user_data.get("emailVerified", False) else "No ❌"
+                )
 
-                📧 **Email:** 
-                {user_info['users'][0]['email']}
-                
-                🏷️ **User name:** 
-                {user_info['users'][0]['providerUserInfo'][0]['displayName']}
-                
-                🖼️ **Photo Url:** 
-                {user_info['users'][0]['providerUserInfo'][0]['photoUrl']}
-                
-                🕒 **Last Refresh:** 
-                {user_info['users'][0]['lastRefreshAt'][:10]}
-                
-                ✅ **Verified Email:** 
-                {'Yes ✔️' if user_info['users'][0]['emailVerified'] else 'No ❌'}
-                """
-            )
+                st.markdown(
+                    f"""
+                    ### 👤 User Profile
+
+                    📧 **Email:** {email}
+                    
+                    🏷️ **User name:** {display_name}
+                    
+                    🖼️ **Photo Url:** {photo_url}
+                    
+                    🕒 **Last Refresh:** {last_refresh}
+                    
+                    ✅ **Verified Email:** {email_verified}
+                    """
+                )
+            except Exception as e:
+                st.error(f"Error fetching user data: {str(e)}")
+
             with st.expander("Update Info"):
                 with st.form(f"Update Personal Data Form", clear_on_submit=True):
                     user_name = st.text_input(label="Enter New User name")
@@ -224,11 +244,12 @@ def main_page():
 
 def login_page():
     st.title("Login Page")
-
-    email = st.text_input("Email")
-    password = st.text_input("Password", type="password")
-
-    if st.button("Login"):
+    with st.container(border=True):
+        with st.form("Loginform", clear_on_submit=True):
+            email = st.text_input("Email")
+            password = st.text_input("Password", type="password")
+            login_button = st.form_submit_button("Login", use_container_width=True)
+    if login_button:
         if email and password:
             # Add debug print
             print(f"Attempting to log in user: {email}")
@@ -241,6 +262,7 @@ def login_page():
                 st.session_state.user_id = userid
 
                 st.toast("Logged in successfully!")
+                st.balloons()
                 st.session_state.authenticated = True
                 st.rerun()
             else:
@@ -251,19 +273,21 @@ def login_page():
 
 def sign_up_page():
     st.title("Sign Up Page")
-
-    email = st.text_input("Email")
-    password = st.text_input("Password", type="password")
-
-    if st.button("Sign Up"):
+    with st.container(border=True):
+        with st.form("SignUpform", clear_on_submit=True):
+            email = st.text_input("Email")
+            password = st.text_input("Password", type="password")
+            sign_up_button = st.form_submit_button("Sign Up", use_container_width=True)
+    if sign_up_button:
         if email and password:
 
             success = au_th.sign_up_user(email=str(email), password=str(password))
 
             if success:
                 st.toast("Account created successfully!")
+                st.balloons()
                 st.session_state.page = "login"
-                st.rerun()
+                # st.rerun()
             else:
                 st.error("Failed to create account. Please try again.")
         else:
@@ -272,20 +296,26 @@ def sign_up_page():
 
 def reset_password_page():
     st.title("Reset Password Page")
+    with st.container(border=True):
+        with st.form("Write in ur Credentials", clear_on_submit=True):
+            mail = st.text_input("Email")
+            reset_pass_button = st.form_submit_button(
+                "Reset Password", use_container_width=True
+            )
+            if reset_pass_button:
+                if mail:
+                    print(f"Attempting to reset password for email: {mail}")
 
-    mail = st.text_input("Email")
+                    response = au_th.send_password_reset_mail(user_mail=str(mail))
 
-    if st.button("Reset Password"):
-        if mail:
-            print(f"Attempting to reset password for email: {mail}")
-
-            response = au_th.send_password_reset_mail(user_mail=str(mail))
-
-            if response:
-                st.toast("Password reset link was sent to your email!")
-                st.session_state.page = "login"
-                st.rerun()
-            else:
-                st.error("Failed to send password reset link. Please try again.")
-        else:
-            st.error("Please enter a valid email address.")
+                    if response:
+                        st.toast("Password reset link was sent to your email!")
+                        st.balloons()
+                        st.session_state.page = "login"
+                        # st.rerun()
+                    else:
+                        st.error(
+                            "Failed to send password reset link. Please try again."
+                        )
+                else:
+                    st.error("Please enter a valid email address.")
