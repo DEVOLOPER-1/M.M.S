@@ -15,7 +15,7 @@ def initialize_firebase():
     cred = credentials.Certificate(credentials_path)
     firebase_admin.initialize_app(credential=cred)
 
-# initialize_firebase()
+initialize_firebase()
 
 def upload_movies_to_firestore(uploaded_records_file_path):
     try:
