@@ -9,11 +9,12 @@ import random
 
 # credentials_path = "credentials.json"
 def initialize_firebase():
-    credentials_path = (
-        r"Syntax_Implementation\credentials.json"
-    )
-    cred = credentials.Certificate(credentials_path)
+    print("Started Initialization")
+    # credentials_path = r"E:\INTERNSHIP\Hackathon Project\M.M.S\Syntax_Implementation\credentials.json"
+    
+    cred = credentials.Certificate(r"Syntax_Implementation\movies-mangement-system-firebase-adminsdk-zcyym-8792092814.json")
     firebase_admin.initialize_app(credential=cred)
+    print("Initialized Firebase")
 
 initialize_firebase()
 

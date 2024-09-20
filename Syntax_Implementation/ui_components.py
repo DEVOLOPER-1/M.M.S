@@ -28,19 +28,19 @@ def movie_card(user_choice):
 
             else:
                 image = None
-                image_path = r"V:\INTERNSHIP\Hackathon Project\Resources\no_image.jpg"
+                image_path = r"no_image.jpg"
                 image = Image.open(image_path)
         except:
             print("retreiving image error")
-            image_path = r"V:\INTERNSHIP\Hackathon Project\Resources\no_image.jpg"
-            image = Image.open(image_path)
+            # image_path = r"V:\INTERNSHIP\Hackathon Project\Resources\no_image.jpg"
+            # image = Image.open(image_path)
         # Assign movie to a column
         col_index = i % 3  # Change 3 to however many columns you want
         with cols[0]:
             with st.container():
                 st.title(single_movie["original_title"])
                 st.subheader(f"Tagline: {single_movie['tagline']}")
-                st.image(image)
+                st.image(image , use_column_width=True)
                 movie_id = single_movie["imdb_id"]
 
                 if user_choice == "Movies Library":
