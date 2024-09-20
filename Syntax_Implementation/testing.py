@@ -2,8 +2,8 @@ import auth as au
 import firebase_utils as fu
 import os 
 
-credentials_path = r"V:\INTERNSHIP\Hackathon Project\M.M.S\Syntax_Implementation\credentials.json"
-uploaded_records_log = r"V:\INTERNSHIP\Hackathon Project\M.M.S\Syntax_Implementation\Logs\uploaded.txt"
+credentials_path = r"Syntax_Implementation\credentials.json"
+uploaded_records_log = r"Syntax_Implementation\Logs\uploaded.txt"
 fu.initialize_firebase()
 
 # fu.upload_movies_to_firestore(uploaded_records_log)

@@ -8,7 +8,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 
-load_dotenv(r"V:\INTERNSHIP\Hackathon Project\M.M.S\Syntax_Implementation\secrets.env")
+load_dotenv(r"Syntax_Implementation\secrets.env")
 api_key = os.getenv("web_api_key")
 
 
