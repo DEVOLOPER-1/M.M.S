@@ -9,7 +9,7 @@ from email.mime.text import MIMEText
 
 
 load_dotenv(r"Syntax_Implementation\secrets.env")
-api_key = os.getenv("web_api_key")
+api_key = os.getenv("web_api_key").strip()
 
 
 def verify_signed_up_email(link, registerer_email):
@@ -61,7 +61,7 @@ def sign_in(user_mail, user_pass):
     response = requests.post(url, headers=headers, data=json.dumps(payload))
     data = response.json()
     print(data)
-    if response.status_code == 200:
+    if response.status_code in [200,201]:
         return [data["idToken"], data["localId"]]
 
 
