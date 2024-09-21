@@ -9,7 +9,6 @@ M.M.S is a powerful and user-friendly application that allows you to manage and 
 ### 🌟 Key Features
 
 - 📚 Comprehensive movie library management
-- 🔍 Advanced search and filtering options
 - 📊 Popularity tracking and analytics
 - 🛒 Shopping cart functionality
 - 👤 User authentication and profiles
