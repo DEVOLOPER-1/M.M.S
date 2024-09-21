@@ -14,6 +14,11 @@ M.M.S is a powerful and user-friendly application that allows you to manage and 
 - 👤 User authentication and profiles
 - 🔄 Real-time updates and synchronization
 
+### 🎥 Usage Showcase Video
+
+[Video Link](https://mega.nz/file/QXgwEaDB#BV3YE9-FtTOgkWpqsWzhQFjF9LOuPoS5UJhKQa94CG4)
+
+
 ## 🚀 Getting Started
 
 There are two ways to get M.M.S up and running on your local machine. Choose the method that works best for you!
